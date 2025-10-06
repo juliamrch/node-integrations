@@ -3,10 +3,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import CreativeEngine from '@cesdk/node';
 
-// Configuration for the engine
 const config = {
   license: process.env.LICENSE_KEY,
-  userId: 'guides-user',
   baseURL: 'https://cdn.img.ly/packages/imgly/cesdk-node/1.60.0/assets'
 };
 
@@ -22,12 +20,12 @@ CreativeEngine.init(config).then(async (engine) => {
     const [page] = engine.block.findByType('page');
 
     const graphics = engine.block.findByType('graphic');
-    if (graphics.length === 0) {
-      throw new Error('No graphic blocks found to rotate.');
+    if (graphics.length < 2) {
+      throw new Error('Need at least two graphic blocks to create a group.');
     }
-    graphics.forEach((blockId) => {
-      engine.block.setRotation(blockId, Math.PI / 4);
-    });
+
+    const groupId = engine.block.group(graphics);
+    engine.block.setFloat(groupId, 'rotation', Math.PI / 4);
 
     const blob = await engine.block.export(page, { mimeType: 'image/png' });
     const arrayBuffer = await blob.arrayBuffer();
@@ -43,7 +41,7 @@ CreativeEngine.init(config).then(async (engine) => {
         .map(Number)
         .reduce((max, n) => Math.max(max, n), 0) + 1;
 
-    const outputName = `example-rotated(${nextIndex}).png`;
+    const outputName = `rotate-group(${nextIndex}).png`;
     const outputPath = path.join(outputDir, outputName);
 
     await fs.writeFile(outputPath, Buffer.from(arrayBuffer));
