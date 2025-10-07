@@ -42,12 +42,14 @@ async function run() {
     engine.block.resetCrop(graphic);
 
     // Test functions here
-
+    engine.block.setCropScaleX(graphic, 2.0);
     engine.block.setWidthMode(graphic, 'Absolute');
+
+    //engine.block.setWidthMode(graphic, 'Absolute');
     const width = engine.block.getWidth(graphic) * 1.5;
     engine.block.setWidth(graphic, width, true );
-    engine.block.scale(graphic, 2, 0.5, 0.5);
-    engine.block.scale(graphic, 2, 0, 0.5);
+    //engine.block.scale(graphic, 2, 0.5, 0.5);
+    //engine.block.scale(graphic, 2, 0, 0.5);
 
     const blob = await engine.block.export(graphic, { mimeType: 'image/png' });
     const outputFilename = `distorted-image-${Date.now()}.png`;
