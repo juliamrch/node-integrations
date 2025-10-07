@@ -50,8 +50,8 @@ async function run() {
     const baseWidth = engine.block.getFloat(graphic, 'width');
     const baseHeight = engine.block.getFloat(graphic, 'height');
 
-    engine.block.setFloat(imageId, 'width', baseWidth * clamped);
-    engine.block.setFloat(imageId, 'height', baseHeight * clamped);
+    engine.block.setFloat(graphic, 'width', baseWidth * clamped);
+    engine.block.setFloat(graphic, 'height', baseHeight * clamped);
 
     // Download result
     const blob = await engine.block.export(graphic, { mimeType: 'image/png' });
