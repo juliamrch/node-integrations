@@ -156,18 +156,32 @@ async function launchCesdk() {
           1080
         );
 
+        // Option A: insert a small sized video
+        instance.engine.block.appendChild(page, videoBlock);
+        await instance.engine.block.forceLoadResources([videoBlock]);
+
+        const targetWidth = 1920 * 0.2;
+        const targetHeight = 1080 * 0.2;
+        instance.engine.block.setSize(videoBlock, targetWidth, targetHeight, {
+          sizeMode: 'Absolute'
+        });
+        instance.engine.block.setPosition(videoBlock, targetWidth / 2, targetHeight / 2, {
+          positionMode: 'Absolute'
+        });
+
         instance.engine.block.appendChild(page, videoBlock);
 
+        // Option B: fit the page'size to the video
+        //const pageWidth = instance.engine.block.getWidth(page);
+        //const pageHeight = instance.engine.block.getHeight(page);
 
-        const pageWidth = instance.engine.block.getWidth(page);
-        const pageHeight = instance.engine.block.getHeight(page);
+        //await instance.engine.block.forceLoadResources([videoBlock]);
+        //instance.engine.block.resizeContentAware(
+        //  [videoBlock],
+        //  pageWidth,
+        //  pageHeight
+        //);
 
-        await instance.engine.block.forceLoadResources([videoBlock]);
-        instance.engine.block.resizeContentAware(
-          [videoBlock],
-          pageWidth,
-          pageHeight
-        );
         // Test video editing functions here
         
         //Scale from center
