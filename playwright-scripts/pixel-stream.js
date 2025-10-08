@@ -149,67 +149,52 @@ async function launchCesdk() {
           positionMode: 'Absolute'
         });
 
-        setStatus('Adding demo video…');
-        const videoBlock = await instance.engine.block.addVideo(
-          demoVideoUrl,
-          1920,
-          1080
-        );
+        setStatus('Simulating camera pixel stream…');
+        const graphic = instance.engine.block.create('graphic');
+        instance.engine.block.setShape(graphic, instance.engine.block.createShape('rect'));
 
-        // Option A: insert a small sized video
-        instance.engine.block.appendChild(page, videoBlock);
-        await instance.engine.block.forceLoadResources([videoBlock]);
-
-        const targetWidth = 1920 * 0.2;
-        const targetHeight = 1080 * 0.2;
-        instance.engine.block.setSize(videoBlock, targetWidth, targetHeight, {
+        const pixelStreamFill = instance.engine.block.createFill('pixelStream');
+        instance.engine.block.setFill(graphic, pixelStreamFill);
+        instance.engine.block.appendChild(page, graphic);
+        instance.engine.block.setSize(graphic, 1920, 1080, {
           sizeMode: 'Absolute'
         });
-        instance.engine.block.setPosition(videoBlock, targetWidth / 2, targetHeight / 2, {
-          positionMode: 'Absolute'
-        });
+        instance.engine.block.setTransformLocked(graphic, false);
+        await instance.engine.block.setRotation(graphic, Math.PI / 2, 0.5, 0.5);
 
-        instance.engine.block.appendChild(page, videoBlock);
-        await instance.engine.editor?.setSettingBool('controlGizmo/showRotateHandles', false);
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 360;
+        const ctx = canvas.getContext('2d');
 
-        // Option B: fit the page'size to the video
-        //const pageWidth = instance.engine.block.getWidth(page);
-        //const pageHeight = instance.engine.block.getHeight(page);
+        if (!ctx) {
+          throw new Error('Unable to obtain 2D context for pixel stream simulation.');
+        }
 
-        //await instance.engine.block.forceLoadResources([videoBlock]);
-        //instance.engine.block.resizeContentAware(
-        //  [videoBlock],
-        //  pageWidth,
-        //  pageHeight
-        //);
+        let frame = 0;
+        const renderFrame = () => {
+          frame += 1;
+          ctx.fillStyle = `hsl(${(frame * 7) % 360}, 70%, 55%)`;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Test video editing functions here
-        // ....
+          ctx.fillStyle = '#fff';
+          ctx.font = '24px sans-serif';
+          ctx.fillText(`Frame ${frame}`, 20, 40);
 
-        // Respect the existing crop
-        //await instance.engine.block.setCropScaleX(videoBlock, 1.5);
-        //await instance.engine.block.setWidthMode(videoBlock, 'Absolute');
-        //const newWidth = (await instance.engine.block.getWidth(videoBlock)) * 1.5;
-        //await instance.engine.block.setWidth(videoBlock, newWidth, true);
+          instance.engine.block.setNativePixelBuffer(pixelStreamFill, canvas);
+        };
 
-        //Crop Scale
-        //await instance.engine.block.setCropScaleX(videoBlock, 1.5);
-        //await instance.engine.block.setWidthMode(videoBlock, 'Absolute');
-        //const newWidth = (await instance.engine.block.getWidth(videoBlock)) * 1.5;
-        //await instance.engine.block.setWidth(videoBlock, newWidth);
+        renderFrame();
+        const intervalHandle = setInterval(renderFrame, 1000 / 30);
+        instance.engine.block.setMetadata(
+          graphic,
+          'simulation/intervalHandle',
+          intervalHandle.toString()
+        );
 
-        //Scale from center
-        //instance.engine.block.scale(videoBlock, 1.5, 0.5, 0.5);
-        //instance.engine.block.scale(videoBlock, 2.5, 0.5, 0.5);
-        
-        
-        // Panoramic:
-        //instance.engine.block.setWidthMode(page, 'Absolute');
-        //const PageWidth = instance.engine.block.getWidth(page) * 1.5;
-        //instance.engine.block.setWidth(page, PageWidth, true );
-        //instance.engine.block.setWidthMode(videoBlock, 'Absolute');
-        //const width = instance.engine.block.getWidth(videoBlock) * 1.5;
-        //instance.engine.block.setWidth(videoBlock, width, true );
+        // Rotate the simulated stream 90° counterclockwise.
+        instance.engine.block.setTransformLocked(graphic, false);
+        await instance.engine.block.setRotation(graphic, Math.PI / 2, 0.5, 0.5);
 
         setStatus('Editor ready.');
         setTimeout(() => {
