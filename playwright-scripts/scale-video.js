@@ -138,12 +138,16 @@ async function launchCesdk() {
         const scene = instance.engine.scene.createVideo({
           page: { size: { width: 1920, height: 1080 } }
         });
-
-        const pages = instance.engine.scene.getPages();
-        const page = pages[0] ?? null;
+        const page = instance.engine.scene.getCurrentPage();
         if (!page) {
           throw new Error('Failed to create scene page.');
         }
+        instance.engine.block.setSize(page, 1920, 1080, {
+          sizeMode: 'Absolute'
+        });
+        instance.engine.block.setPosition(page, 0, 0, {
+          positionMode: 'Absolute'
+        });
 
         setStatus('Adding demo video…');
         const videoBlock = await instance.engine.block.addVideo(
@@ -151,6 +155,9 @@ async function launchCesdk() {
           1920,
           1080
         );
+
+        instance.engine.block.appendChild(page, videoBlock);
+
 
         const pageWidth = instance.engine.block.getWidth(page);
         const pageHeight = instance.engine.block.getHeight(page);
@@ -161,6 +168,20 @@ async function launchCesdk() {
           pageWidth,
           pageHeight
         );
+        // Test video editing functions here
+        
+        //Scale from center
+        //instance.engine.block.scale(videoBlock, 1.5, 0.5, 0.5);
+        //instance.engine.block.scale(videoBlock, 2.5, 0.5, 0.5);
+        
+        
+        // Panoramic:
+        //instance.engine.block.setWidthMode(page, 'Absolute');
+        //const PageWidth = instance.engine.block.getWidth(page) * 1.5;
+        //instance.engine.block.setWidth(page, PageWidth, true );
+        //instance.engine.block.setWidthMode(videoBlock, 'Absolute');
+        //const width = instance.engine.block.getWidth(videoBlock) * 1.5;
+        //instance.engine.block.setWidth(videoBlock, width, true );
 
         setStatus('Editor ready.');
         setTimeout(() => {

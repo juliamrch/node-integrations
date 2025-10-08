@@ -40,23 +40,11 @@ async function run() {
       sizeMode: 'Absolute'
     });
     engine.block.resetCrop(graphic);
+    //engine.block.scale(graphic, 2, 0.5, 0.5);
+    engine.block.scale(graphic, 2, 0, 0.5);
 
-    // Test functions here
-    const targetScale = 1.9; // dynamic input
-    const minScale = 0.5;
-    const maxScale = 2.0;
-    const clamped = Math.min(Math.max(targetScale, minScale), maxScale);
-
-    const baseWidth = engine.block.getFloat(graphic, 'width');
-    const baseHeight = engine.block.getFloat(graphic, 'height');
-
-    engine.block.setFloat(imageId, 'width', baseWidth * clamped);
-    engine.block.setFloat(imageId, 'height', baseHeight * clamped);
-
-    // Download result
     const blob = await engine.block.export(graphic, { mimeType: 'image/png' });
-    const outputFilename = `scale-constraints-${Date.now()}.png`;
-    const outputPath = path.resolve('assets', outputFilename);
+    const outputPath = path.resolve('assets/scaled-image.png');
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, Buffer.from(await blob.arrayBuffer()));
     console.log(`Exported scaled image to ${outputPath}`);
