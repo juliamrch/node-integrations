@@ -185,30 +185,15 @@ async function launchCesdk() {
         // Test video editing functions here
         // ....
 
-        // Respect the existing crop
-        //await instance.engine.block.setCropScaleX(videoBlock, 1.5);
-        //await instance.engine.block.setWidthMode(videoBlock, 'Absolute');
-        //const newWidth = (await instance.engine.block.getWidth(videoBlock)) * 1.5;
-        //await instance.engine.block.setWidth(videoBlock, newWidth, true);
+        await instance.engine.block.setRotation(videoBlock, Math.PI / 2);
+        const currentRotation = await instance.engine.block.getRotation(videoBlock);
+        console.log('Video rotation is', currentRotation);
+        const toRadians = (degrees) => (degrees * Math.PI) / 180;
+        const toDegrees = (radians) => (radians * 180) / Math.PI;
 
-        //Crop Scale
-        //await instance.engine.block.setCropScaleX(videoBlock, 1.5);
-        //await instance.engine.block.setWidthMode(videoBlock, 'Absolute');
-        //const newWidth = (await instance.engine.block.getWidth(videoBlock)) * 1.5;
-        //await instance.engine.block.setWidth(videoBlock, newWidth);
-
-        //Scale from center
-        //instance.engine.block.scale(videoBlock, 1.5, 0.5, 0.5);
-        //instance.engine.block.scale(videoBlock, 2.5, 0.5, 0.5);
-        
-        
-        // Panoramic:
-        //instance.engine.block.setWidthMode(page, 'Absolute');
-        //const PageWidth = instance.engine.block.getWidth(page) * 1.5;
-        //instance.engine.block.setWidth(page, PageWidth, true );
-        //instance.engine.block.setWidthMode(videoBlock, 'Absolute');
-        //const width = instance.engine.block.getWidth(videoBlock) * 1.5;
-        //instance.engine.block.setWidth(videoBlock, width, true );
+        const targetRadians = toRadians(45); // 0.785398...
+        await instance.engine.block.setRotation(videoBlock, targetRadians);
+        console.log('Video rotation is', toDegrees(targetRadians), '°');
 
         setStatus('Editor ready.');
         setTimeout(() => {
