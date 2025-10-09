@@ -14,17 +14,27 @@ async function run() {
     const imageURL = 'https://img.ly/static/ubq_samples/sample_1.jpg';
 
     // Create a new scene by loading the image immediately
-    await engine.scene.createFromImage(imageURL);
+    await engine.scene.createFromImage(imageURL, 72);
 
     // Find the automatically added graphic block with an image fill
-    //const block = engine.block.findByType('graphic')[0];
+    const block = engine.block.findByType('page')[0];
 
     // Apply crop with a scale ratio of 2.0
-    //engine.block.setCropScaleRatio(block, 2.0);
+    engine.block.setCropScaleRatio(block, 2.0);
 
     // Export as PDF Blob
     const page = engine.scene.getCurrentPage();
-    const blob = await engine.block.export(page, { mimeType: 'application/pdf' });
+    // Set spot color to be used as underlayer
+    engine.editor.setSpotColorRGB('RDG_WHITE', 0.8, 0.8, 0.8);
+
+    const blob = await engine.block.export(page, { mimeType: 'application/pdf',
+      targetWidth: 800,
+      targetHeight: 600,
+      exportPdfWithHighCompatibility: true,
+      exportPdfWithUnderlayer: true,
+      underlayerSpotColorName: 'RDG_WHITE',
+      underlayerOffset: -2.0,
+     });
     // You can now save it or display it in your application
     //const scene = engine.scene.create();
     //const page = engine.block.create('page');
