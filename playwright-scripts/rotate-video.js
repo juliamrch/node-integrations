@@ -184,7 +184,9 @@ async function launchCesdk() {
 
         // Test video editing functions here
         // ....
-
+        instance.engine.block.setTransformLocked(videoBlock, true);
+        const canRotate = instance.engine.block.isScopeEnabled(videoBlock, 'layer/rotate');
+        console.log('Rotation enabled?', canRotate);
         await instance.engine.block.setRotation(videoBlock, Math.PI / 2);
         const currentRotation = await instance.engine.block.getRotation(videoBlock);
         console.log('Video rotation is', currentRotation);
